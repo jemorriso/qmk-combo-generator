@@ -1,6 +1,5 @@
 from typing import List, Optional
 import copy
-import json
 from dataclasses import dataclass
 from model import Model
 
@@ -22,23 +21,6 @@ class LayerKey:
 class Mod:
     keys: List[Key]
     position_key: Key
-
-    def modify(self, key: Key) -> str:
-        def mod(mod_keys: List[Key]):
-            if len(mod_keys) == 0:
-                return key.name
-
-            curr_key = mod_keys.pop()
-            return f"{curr_key.name}({mod(mod_keys)})"
-
-        return mod(copy.deepcopy(self.keys))
-
-
-@dataclass
-class ModOld:
-    name: str
-    keys: List[Key]
-    reference_key: Key
 
     def modify(self, key: Key) -> str:
         def mod(mod_keys: List[Key]):
@@ -77,54 +59,6 @@ class Combo:
 
     def get_element(self) -> str:
         return f"COMBO({self.name}, {self.action})"
-
-
-@dataclass
-class ComboOld:
-    # action: str = None
-    layer_key: LayerKey
-    other_key: Key
-    key: Key
-
-    def get_name(self) -> str:
-        return str.join("_", [self.layer_key.layer_name, self.key.name]).lower()
-
-    def get_keys(self) -> List[str]:
-        return [self.layer_key.key.name, self.other_key.name, self.key.name]
-
-    def get_action(self):
-        pass
-
-    def get_var(self) -> str:
-        return f"const uint16_t PROGMEM {self.get_name()}[] = {{{str.join(', ', self.get_keys())}, COMBO_END}};"
-
-    def get_element(self) -> str:
-        return f"COMBO({self.get_name()}, {self.key.keycode})"
-
-
-#
-# class ModComboOld():
-#     mod: Mod
-#     # combo: Combo
-#     layer_key: LayerKey
-#     key: Key
-#
-#     def get_name(self) -> str:
-#         return str.join(
-#             "_", [self.layer_key.layer_name, self.mod.name, self.key.name]
-#         ).lower()
-#
-#     def get_keys(self) -> List[str]:
-#         return [self.layer_key.key.name, self.mod.reference_key.name, self.key.name]
-#
-#     def get_action(self):
-#         pass
-#
-#     def get_var(self) -> str:
-#         return f"const uint16_t PROGMEM {self.get_name()}[] = {{{str.join(', ', self.get_keys())}, COMBO_END}};"
-#
-#     def get_element(self) -> str:
-#         return f"COMBO({self.get_name()}, {self.mod.modify(self.key)})"
 
 
 @dataclass
